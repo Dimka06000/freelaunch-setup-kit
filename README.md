@@ -91,43 +91,36 @@ setup-kit/
 
 ---
 
-## ▶️ Démarrage — le guide interactif (recommandé)
+## ▶️ Démarrage — pour un débutant (le plus simple)
 
-Le kit s'ouvre comme une **page web de suivi** (checklist + commandes avec bouton « Copier »,
-progression sauvegardée) servie par un petit **dev serveur local** (Node, zéro dépendance).
+**Le principe : tu n'installes que Claude. Ensuite, c'est lui qui installe le reste et te guide.**
 
-**Windows** — double-clique **`start.cmd`** (ou en terminal `node serve.js`)
-**macOS / Linux** — `bash ./start.sh` (ou `node serve.js`)
+1. **Installe l'assistant Claude** (dans le terminal) :
+   ```powershell
+   irm https://claude.ai/install.ps1 | iex          # Windows
+   ```
+   ```bash
+   curl -fsSL https://claude.ai/install.sh | bash    # macOS / Linux
+   ```
+2. **Lance-le** (`claude`), connecte-toi, puis **colle-lui ce message** :
+   > Lis `https://github.com/Dimka06000/freelaunch-setup-kit`, installe tous les outils dont j'ai
+   > besoin, guide-moi pour mes comptes et mes clés, et aide-moi à créer ma plateforme. Je ne suis
+   > pas développeur, parle-moi en français.
+3. **Tu réponds juste à ses questions** (autoriser une page, coller une clé, dire oui). Il fait le reste.
 
-→ Ton navigateur s'ouvre tout seul sur `http://localhost:4321` avec le guide.
+La page guide [index.html](./index.html) présente ces 2 étapes joliment, avec boutons « Copier ».
 
-### ⭐ Le one-liner « tout-en-un » (recommandé)
+### Voir la page guide
+**Windows** : double-clique `start.cmd` · **Mac/Linux** : `bash ./start.sh` (ou `node serve.js`)
+→ s'ouvre sur `http://localhost:4321`.
 
-Une seule commande qui **télécharge le kit → installe TOUS les CLI automatiquement** (Node, git,
-gh, vercel, supabase, stripe, Claude Code, sans admin) **→ ouvre le guide** pour les seules étapes
-qui demandent tes comptes (connexions navigateur + clés API) :
-
+### Pour les devs / les pressés : tout installer d'un coup
+Le one-liner [bootstrap](./bootstrap.ps1) télécharge le kit, **installe tous les CLI** puis ouvre le guide :
 ```powershell
 irm https://raw.githubusercontent.com/Dimka06000/freelaunch-setup-kit/main/bootstrap.ps1 | iex     # Windows
 ```
 ```bash
 curl -fsSL https://raw.githubusercontent.com/Dimka06000/freelaunch-setup-kit/main/bootstrap.sh | bash   # macOS / Linux
 ```
-
-> Ce qui reste forcément manuel (Claude ne peut pas créer tes comptes) : valider les logins dans le
-> navigateur et récupérer les clés API. Le guide t'y emmène pas à pas.
-
-### Alternative : tu as déjà le `setup-kit.zip`
-```powershell
-Expand-Archive "$HOME\Downloads\setup-kit.zip" "$HOME" -Force; node "$HOME\setup-kit\serve.js"   # Windows
-```
-```bash
-unzip -o ~/Downloads/setup-kit.zip -d ~ && node ~/setup-kit/serve.js                              # macOS / Linux
-```
-Détecte ton OS et affiche les bonnes commandes. Coche au fur et à mesure.
-
-> Pas encore Node ? Le launcher ouvre quand même la page (mode fichier) et te dit d'installer Node
-> (chapitre 0), puis relance pour avoir le dev serveur. Les fichiers `.md` ci-dessous restent
-> disponibles si tu préfères lire.
 
 Bonne installe 🚀
