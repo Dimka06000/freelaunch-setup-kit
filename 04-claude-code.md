@@ -90,8 +90,9 @@ un fichier…). Tu contrôles ça finement via des fichiers de réglages :
 | `plan` | **Plan mode** : Claude propose un plan, ne touche à rien tant que tu ne valides pas |
 | `bypassPermissions` | ⚠️ **Ne demande plus rien** (voir section bypass ci-dessous) |
 
-> 🔁 **Astuce** : dans la session, **Shift+Tab** fait défiler les modes (default → acceptEdits → plan).
-> Tu vois le mode courant en bas de l'écran.
+> 🔁 **Changer de mode** : dans le **terminal**, **Shift+Tab** fait défiler les modes
+> (default → acceptEdits → plan). Dans l'**extension VS Code**, clique l'**indicateur de mode**
+> en bas de la zone de message. Le mode courant est toujours affiché en bas.
 
 ### Exemple de `settings.json` (permissions allow/deny)
 
@@ -130,16 +131,33 @@ un fichier…). Tu contrôles ça finement via des fichiers de réglages :
 Quand tu fais confiance à Claude pour enchaîner du travail sans t'arrêter à chaque étape
 (typiquement une longue session de build), tu peux désactiver les confirmations :
 
-### En ligne de commande (le « YOLO mode »)
+### 🖥️ Dans l'extension VS Code (le cas le plus courant) — ⚠️ pas avec le flag
+
+Le flag `--dangerously-skip-permissions` **ne marche que dans le terminal**, **pas dans l'extension
+VS Code**. Dans l'extension, c'est en **2 temps** :
+
+1. **Autoriser le bypass** (une seule fois) : ouvre les réglages avec `Ctrl+,` (Windows) /
+   `Cmd+,` (Mac) → onglet **Extensions → Claude Code** → coche **« Allow dangerously skip permissions »**.
+2. **L'activer dans la session** : en bas de la zone de message, clique l'**indicateur de mode**
+   (il affiche « Ask before edits » / « Edit automatically » / « Plan mode »…) → choisis
+   **« Bypass permissions »**.
+
+> Pour qu'un mode soit le **défaut à chaque ouverture** : réglage **« Initial Permission Mode »**
+> (clé `claudeCode.initialPermissionMode`) dans les settings de l'extension — valeurs `default`,
+> `plan`, `acceptEdits`, `bypassPermissions`.
+
+### ⌨️ Dans le terminal (CLI)
 ```bash
 claude --dangerously-skip-permissions
 ```
-Claude n'attend plus aucune validation : il lit, écrit, exécute, déploie en autonomie.
+Là, le flag suffit. Claude n'attend plus aucune validation : il lit, écrit, exécute, déploie.
 
-### En réglage permanent (équivalent)
+### 📌 En réglage permanent (terminal **et** extension)
 ```json
 { "permissions": { "defaultMode": "bypassPermissions" } }
 ```
+Dans `.claude/settings.json` (projet) ou `~/.claude/settings.json` (global) — respecté par les deux.
+Garde-fou : sous macOS/Linux, Claude **refuse de démarrer en bypass en root / `sudo`**.
 
 ### ⚠️ À lire avant d'activer le bypass
 - N'utilise ça **que dans un dossier de projet que tu contrôles** (idéalement un repo git, pour
