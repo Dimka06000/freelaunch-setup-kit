@@ -1,0 +1,356 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Setup Kit — De zéro à une plateforme</title>
+<style>
+  :root{
+    --bg:#FFF6EC; --surface:#fff; --ink:#1c1917; --muted:#78716c;
+    --accent:#FF6B3D; --accent-dark:#E8552B; --success:#16a34a;
+    --border:#1c191714; --code:#211c1a; --code-ink:#f5efe7;
+    --radius:16px; --shadow:0 10px 30px -12px #1c191730;
+    --maxw:880px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.55; -webkit-font-smoothing:antialiased;
+  }
+  /* OS conditional */
+  body.os-win .unix{display:none}
+  body.os-unix .win{display:none}
+
+  /* Top bar */
+  header.top{
+    position:sticky; top:0; z-index:50; background:#fff6ecd9; backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--border);
+  }
+  .top-inner{max-width:var(--maxw); margin:0 auto; padding:14px 20px; display:flex; align-items:center; gap:14px; flex-wrap:wrap}
+  .brand{display:flex; align-items:center; gap:10px; font-weight:800; letter-spacing:-.02em}
+  .rocket{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent-dark));
+    display:grid;place-items:center;font-size:18px;box-shadow:var(--shadow)}
+  .brand small{display:block;font-weight:600;color:var(--muted);font-size:11px;letter-spacing:0}
+  .spacer{flex:1}
+  .osswitch{display:inline-flex; background:#0000000d; border-radius:999px; padding:3px}
+  .osswitch button{border:0;background:transparent;padding:6px 14px;border-radius:999px;cursor:pointer;
+    font-weight:700;font-size:13px;color:var(--muted)}
+  .osswitch button.active{background:#fff;color:var(--ink);box-shadow:0 1px 4px #0000001a}
+
+  /* progress */
+  .progwrap{max-width:var(--maxw);margin:0 auto;padding:0 20px}
+  .progbar{height:8px;background:#0000000f;border-radius:999px;overflow:hidden;margin:10px 0 0}
+  .progfill{height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent-dark));transition:width .4s ease}
+  .progmeta{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-top:6px}
+
+  main{max-width:var(--maxw); margin:0 auto; padding:28px 20px 120px}
+
+  .hero{padding:18px 0 8px}
+  .hero h1{font-size:clamp(28px,5vw,40px);line-height:1.05;letter-spacing:-.03em;margin:.2em 0}
+  .hero p{color:var(--muted);font-size:17px;max-width:60ch}
+
+  .chips{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0 4px}
+  .chip{font-size:12px;font-weight:700;background:#fff;border:1px solid var(--border);padding:5px 11px;border-radius:999px}
+
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+    box-shadow:var(--shadow);padding:22px 22px 8px;margin:18px 0;scroll-margin-top:120px}
+  .card h2{display:flex;align-items:center;gap:12px;margin:0 0 4px;font-size:21px;letter-spacing:-.02em}
+  .num{flex:none;width:30px;height:30px;border-radius:9px;background:var(--accent);color:#fff;
+    display:grid;place-items:center;font-size:15px;font-weight:800}
+  .card > p{color:var(--muted);margin-top:2px}
+  .done-badge{margin-left:auto;font-size:12px;font-weight:700;color:var(--success);opacity:0;transition:.2s}
+  .card.done .done-badge{opacity:1}
+  .card.done{border-color:#16a34a40}
+
+  /* command block */
+  .cmd{position:relative;margin:12px 0}
+  .cmd pre{margin:0;background:var(--code);color:var(--code-ink);border-radius:12px;padding:14px 92px 14px 16px;
+    overflow:auto;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13.5px;line-height:1.5}
+  .cmd .copy{position:absolute;top:9px;right:9px;border:0;background:#ffffff1a;color:#fff;
+    padding:6px 12px;border-radius:8px;cursor:pointer;font-weight:700;font-size:12px}
+  .cmd .copy:hover{background:#ffffff33}
+  .cmd .copy.ok{background:var(--success)}
+
+  .step{display:flex;gap:12px;align-items:flex-start;padding:11px 0;border-top:1px dashed var(--border)}
+  .step:first-of-type{border-top:0}
+  .step input{margin-top:4px;width:19px;height:19px;accent-color:var(--accent);cursor:pointer;flex:none}
+  .step .body{flex:1;min-width:0}
+  .step .body b{font-weight:700}
+  .step.checked .body{opacity:.55;text-decoration:line-through;text-decoration-color:#16a34a80}
+
+  a{color:var(--accent-dark);font-weight:600;text-decoration:none}
+  a:hover{text-decoration:underline}
+  .note{background:#fff3e9;border:1px solid #ff6b3d33;border-radius:12px;padding:12px 14px;margin:12px 0;font-size:14px}
+  .warn{background:#fef2f2;border:1px solid #ef444433;border-radius:12px;padding:12px 14px;margin:12px 0;font-size:14px}
+  .muted{color:var(--muted)}
+  code.inl{background:#0000000d;padding:2px 7px;border-radius:6px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.9em}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  @media(max-width:560px){.grid{grid-template-columns:1fr}}
+  .svc{background:#fff;border:1px solid var(--border);border-radius:12px;padding:11px 13px;font-size:14px}
+  .svc b{display:block}
+  .footer{max-width:var(--maxw);margin:0 auto;padding:0 20px 60px;color:var(--muted);font-size:13px}
+  .reset{background:transparent;border:1px solid var(--border);color:var(--muted);padding:7px 14px;border-radius:999px;cursor:pointer;font-weight:600}
+  .reset:hover{color:var(--ink)}
+</style>
+</head>
+<body class="os-win">
+
+<header class="top">
+  <div class="top-inner">
+    <div class="brand"><span class="rocket">🚀</span>
+      <span>Setup Kit<small>de zéro à une plateforme</small></span>
+    </div>
+    <div class="spacer"></div>
+    <div class="osswitch" id="osswitch">
+      <button data-os="win" class="active">🪟 Windows</button>
+      <button data-os="unix">🍎 Mac / Linux</button>
+    </div>
+  </div>
+  <div class="progwrap">
+    <div class="progbar"><div class="progfill" id="progfill"></div></div>
+    <div class="progmeta"><span id="progtext">0 / 0 étapes</span><span id="progpct">0%</span></div>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <h1>Installe ton environnement,<br>puis construis ta plateforme.</h1>
+    <p>Suis les étapes dans l'ordre et coche au fur et à mesure (ta progression est sauvegardée).
+       Chaque commande a un bouton <b>Copier</b>. Choisis ton système en haut à droite.</p>
+    <div class="chips">
+      <span class="chip">Next.js + Tailwind</span>
+      <span class="chip">Supabase</span>
+      <span class="chip">Stripe</span>
+      <span class="chip">Vercel</span>
+      <span class="chip">Claude Code + MCP</span>
+    </div>
+  </section>
+
+  <!-- 0 -->
+  <article class="card" id="c0">
+    <h2><span class="num">0</span> Prérequis <span class="done-badge">✓ fait</span></h2>
+    <p>Un terminal, un gestionnaire de paquets, et Node.js (le socle).</p>
+
+    <div class="win">
+      <div class="cmd"><pre><code># Scoop (installe des CLI sans droits admin)
+Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
+irm get.scoop.sh | iex</code></pre><button class="copy">Copier</button></div>
+      <div class="cmd"><pre><code>winget install OpenJS.NodeJS.LTS</code></pre><button class="copy">Copier</button></div>
+    </div>
+    <div class="unix">
+      <div class="cmd"><pre><code># Homebrew (gestionnaire de paquets macOS)
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"</code></pre><button class="copy">Copier</button></div>
+      <div class="cmd"><pre><code>brew install node</code></pre><button class="copy">Copier</button></div>
+    </div>
+
+    <div class="step"><input type="checkbox" data-id="s0a"><div class="body"><b>Terminal + gestionnaire de paquets</b> prêts (Scoop / Homebrew)</div></div>
+    <div class="step"><input type="checkbox" data-id="s0b"><div class="body"><b>Node.js installé</b> — vérifie avec <code class="inl">node -v</code> (≥ 20). <span class="muted">Ferme/rouvre le terminal après l'install.</span></div></div>
+    <p class="muted">Détail : <a href="00-prerequis.md">00-prerequis.md</a></p>
+  </article>
+
+  <!-- 1 -->
+  <article class="card" id="c1">
+    <h2><span class="num">1</span> Installer les CLI <span class="done-badge">✓ fait</span></h2>
+    <p>Un script installe tout : git, gh, vercel, supabase, stripe, Claude Code.</p>
+    <div class="win">
+      <div class="cmd"><pre><code>./scripts/install-windows.ps1</code></pre><button class="copy">Copier</button></div>
+      <div class="cmd"><pre><code>./scripts/verify.ps1</code></pre><button class="copy">Copier</button></div>
+    </div>
+    <div class="unix">
+      <div class="cmd"><pre><code>bash ./scripts/install-mac.sh</code></pre><button class="copy">Copier</button></div>
+      <div class="cmd"><pre><code>bash ./scripts/verify.sh</code></pre><button class="copy">Copier</button></div>
+    </div>
+    <div class="step"><input type="checkbox" data-id="s1a"><div class="body"><b>Script d'installation lancé</b></div></div>
+    <div class="step"><input type="checkbox" data-id="s1b"><div class="body"><b>Vérification OK</b> — toutes les lignes en <code class="inl">[OK]</code></div></div>
+    <p class="muted">Détail : <a href="01-cli-tools.md">01-cli-tools.md</a></p>
+  </article>
+
+  <!-- 2 -->
+  <article class="card" id="c2">
+    <h2><span class="num">2</span> GitHub <span class="done-badge">✓ fait</span></h2>
+    <p>Identité git, connexion <code class="inl">gh</code>, clé SSH, premier repo.</p>
+    <div class="cmd"><pre><code>git config --global user.name "Ton Nom"
+git config --global user.email "ton-email@github.com"
+git config --global init.defaultBranch main</code></pre><button class="copy">Copier</button></div>
+    <div class="cmd"><pre><code>gh auth login</code></pre><button class="copy">Copier</button></div>
+    <div class="cmd"><pre><code>ssh-keygen -t ed25519 -C "ton-email@github.com"
+gh ssh-key add ~/.ssh/id_ed25519.pub --title "Mon PC"
+ssh -T git@github.com</code></pre><button class="copy">Copier</button></div>
+    <div class="cmd"><pre><code>gh repo create mon-projet --private --source=. --remote=origin --push</code></pre><button class="copy">Copier</button></div>
+    <div class="step"><input type="checkbox" data-id="s2a"><div class="body"><b>git config</b> (nom + email) posé</div></div>
+    <div class="step"><input type="checkbox" data-id="s2b"><div class="body"><b>gh authentifié</b> — <code class="inl">gh auth status</code> OK</div></div>
+    <div class="step"><input type="checkbox" data-id="s2c"><div class="body"><b>Clé SSH</b> ajoutée à GitHub (<code class="inl">ssh -T git@github.com</code> OK)</div></div>
+    <div class="warn">⚠️ Vérifie que <code class="inl">.env.local</code> est dans <code class="inl">.gitignore</code> <b>avant</b> tout commit. Un secret poussé = compromis.</div>
+    <p class="muted">Détail : <a href="02-github.md">02-github.md</a></p>
+  </article>
+
+  <!-- 3 -->
+  <article class="card" id="c3">
+    <h2><span class="num">3</span> Clés API <span class="done-badge">✓ fait</span></h2>
+    <p>Crée les comptes, copie chaque clé dans <code class="inl">.env.local</code>.</p>
+    <div class="win"><div class="cmd"><pre><code>Copy-Item templates/env.local.example .env.local</code></pre><button class="copy">Copier</button></div></div>
+    <div class="unix"><div class="cmd"><pre><code>cp templates/env.local.example .env.local</code></pre><button class="copy">Copier</button></div></div>
+    <div class="grid">
+      <div class="svc"><b>Supabase</b><a href="https://supabase.com" target="_blank">supabase.com →</a> URL + anon + service_role + access token</div>
+      <div class="svc"><b>Stripe</b><a href="https://dashboard.stripe.com/test/apikeys" target="_blank">dashboard.stripe.com →</a> pk_test + sk_test</div>
+      <div class="svc"><b>Resend</b><a href="https://resend.com" target="_blank">resend.com →</a> API key (+ domaine)</div>
+      <div class="svc"><b>Google Cloud</b><a href="https://console.cloud.google.com" target="_blank">console.cloud.google.com →</a> OAuth + Maps</div>
+      <div class="svc"><b>GitHub OAuth</b><a href="https://github.com/settings/developers" target="_blank">settings/developers →</a> client id/secret</div>
+      <div class="svc"><b>Anthropic</b><a href="https://console.anthropic.com" target="_blank">console.anthropic.com →</a> sk-ant-…</div>
+    </div>
+    <div class="note">🔑 Secrets à générer toi-même (CRON_SECRET, etc.) :
+      <span class="win"><code class="inl">[guid]::NewGuid().ToString("N")+[guid]::NewGuid().ToString("N")</code></span>
+      <span class="unix"><code class="inl">openssl rand -hex 32</code></span>
+    </div>
+    <div class="step"><input type="checkbox" data-id="s3a"><div class="body"><b>.env.local créé</b> depuis le template</div></div>
+    <div class="step"><input type="checkbox" data-id="s3b"><div class="body"><b>Supabase</b> — clés copiées + providers Google/GitHub branchés</div></div>
+    <div class="step"><input type="checkbox" data-id="s3c"><div class="body"><b>Stripe</b> — clés test copiées</div></div>
+    <div class="step"><input type="checkbox" data-id="s3d"><div class="body"><b>Resend + Google + GitHub OAuth + Anthropic</b> — clés copiées</div></div>
+    <p class="muted">Détail (procédure clé par clé) : <a href="03-api-keys.md">03-api-keys.md</a></p>
+  </article>
+
+  <!-- 4 -->
+  <article class="card" id="c4">
+    <h2><span class="num">4</span> Claude Code <span class="done-badge">✓ fait</span></h2>
+    <p>Le copilote qui code. Install, connexion, et paramétrage.</p>
+    <div class="win"><div class="cmd"><pre><code>irm https://claude.ai/install.ps1 | iex</code></pre><button class="copy">Copier</button></div></div>
+    <div class="unix"><div class="cmd"><pre><code>curl -fsSL https://claude.ai/install.sh | bash</code></pre><button class="copy">Copier</button></div></div>
+    <div class="cmd"><pre><code>claude</code></pre><button class="copy">Copier</button></div>
+    <div class="note">⚙️ <b>Paramétrage & bypass</b> — copie <code class="inl">templates/settings.json.example</code> dans <code class="inl">.claude/settings.json</code> (permissions allow/deny + <code class="inl">deny</code> sur les <code class="inl">.env</code>).
+      Pour enchaîner sans confirmations : <code class="inl">claude --dangerously-skip-permissions</code> (uniquement dans un repo git que tu contrôles).</div>
+    <div class="step"><input type="checkbox" data-id="s4a"><div class="body"><b>Claude Code installé</b> — <code class="inl">claude --version</code></div></div>
+    <div class="step"><input type="checkbox" data-id="s4b"><div class="body"><b>Connecté</b> (abonnement Claude ou clé API)</div></div>
+    <p class="muted">Détail : <a href="04-claude-code.md">04-claude-code.md</a></p>
+  </article>
+
+  <!-- 5 -->
+  <article class="card" id="c5">
+    <h2><span class="num">5</span> Serveurs MCP <span class="done-badge">✓ fait</span></h2>
+    <p>Branche les super-pouvoirs connectés de Claude Code.</p>
+    <div class="cmd"><pre><code>claude mcp add --transport http vercel https://mcp.vercel.com
+claude mcp add playwright -s user -- npx -y @playwright/mcp@latest
+claude mcp add --transport http context7 https://mcp.context7.com/mcp
+claude mcp add supabase -s user -e SUPABASE_ACCESS_TOKEN=sbp_xxx -- npx -y @supabase/mcp-server-supabase@latest --read-only</code></pre><button class="copy">Copier</button></div>
+    <div class="cmd"><pre><code>claude mcp list</code></pre><button class="copy">Copier</button></div>
+    <div class="note">Pour les serveurs OAuth (Vercel, Stripe) : ajoute-les, puis dans Claude tape <code class="inl">/mcp</code> → <b>Authenticate</b>. Tu peux aussi copier <code class="inl">templates/mcp.json.example</code> en <code class="inl">.mcp.json</code>.</div>
+    <div class="step"><input type="checkbox" data-id="s5a"><div class="body"><b>MCP ajoutés</b> — <code class="inl">claude mcp list</code> montre <code class="inl">✓ Connected</code></div></div>
+    <p class="muted">Détail : <a href="05-mcp.md">05-mcp.md</a></p>
+  </article>
+
+  <!-- 6 -->
+  <article class="card" id="c6">
+    <h2><span class="num">6</span> Créer la plateforme <span class="done-badge">✓ fait</span></h2>
+    <p>Scaffold → services → déploiement → laisser Claude construire.</p>
+    <div class="cmd"><pre><code>npx create-next-app@latest mon-projet --typescript --tailwind --app --eslint --src-dir
+cd mon-projet</code></pre><button class="copy">Copier</button></div>
+    <div class="cmd"><pre><code>git add -A && git commit -m "chore: initial scaffold"
+gh repo create mon-projet --private --source=. --remote=origin --push</code></pre><button class="copy">Copier</button></div>
+    <div class="cmd"><pre><code>npm install @supabase/supabase-js @supabase/ssr stripe @stripe/stripe-js resend
+supabase login && supabase link --project-ref &lt;ref&gt;
+vercel login && vercel link</code></pre><button class="copy">Copier</button></div>
+    <div class="note">Puis ouvre <code class="inl">claude</code> dans le dossier et décris la feature. Exemple :
+      <br><i>« Lis CLAUDE.md. Construis l'auth : login Google + GitHub via Supabase, page /login en français, migration SQL avec RLS, puis teste avec Playwright avant de dire que c'est fini. »</i></div>
+    <div class="step"><input type="checkbox" data-id="s6a"><div class="body"><b>App Next.js créée</b> + repo pushé</div></div>
+    <div class="step"><input type="checkbox" data-id="s6b"><div class="body"><b>Supabase + Stripe + Vercel</b> liés</div></div>
+    <div class="step"><input type="checkbox" data-id="s6c"><div class="body"><b>Première feature construite</b> par Claude Code 🎉</div></div>
+    <p class="muted">Détail : <a href="06-creer-la-plateforme.md">06-creer-la-plateforme.md</a></p>
+  </article>
+
+  <!-- 7 -->
+  <article class="card" id="c7">
+    <h2><span class="num">7</span> Fichiers Claude &amp; centralisation <span class="done-badge">✓ fait</span></h2>
+    <p>Range chaque chose au bon niveau : <b>global</b> (toi partout) vs <b>projet</b> (ce repo) vs <b>local</b> (perso, non commit).</p>
+    <div class="grid">
+      <div class="svc"><b>🌍 Global — ~/.claude/</b>CLAUDE.md (ton style), settings.json, commands/, agents/. MCP user dans ~/.claude.json</div>
+      <div class="svc"><b>📦 Projet — racine + .claude/</b>CLAUDE.md (stack, règles), .mcp.json, .claude/settings.json (commit, partagé équipe)</div>
+      <div class="svc"><b>🔒 Local — .claude/settings.local.json</b>Tes overrides perso (gitignored)</div>
+      <div class="svc"><b>♻️ Anti-duplication</b>Une règle commune ? → en global. Importe avec <code class="inl">@chemin</code> au lieu de copier-coller</div>
+    </div>
+    <div class="note">Règle d'or : écris chaque règle <b>une seule fois</b>, au bon niveau. Jamais de secret dans un fichier commit (CLAUDE.md, .mcp.json) → toujours <code class="inl">${VAR}</code> + <code class="inl">.env.local</code>.</div>
+    <div class="step"><input type="checkbox" data-id="s7a"><div class="body"><b>Compris la hiérarchie</b> global / projet / local + l'ordre de priorité</div></div>
+    <p class="muted">Détail : <a href="07-claude-architecture.md">07-claude-architecture.md</a></p>
+  </article>
+
+</main>
+
+<div class="footer">
+  <button class="reset" id="reset">↺ Réinitialiser ma progression</button>
+  &nbsp;·&nbsp; Ta progression est sauvegardée dans ce navigateur.
+</div>
+
+<script>
+(function(){
+  // ---- OS detection ----
+  function detectOS(){
+    var p=(navigator.userAgentData&&navigator.userAgentData.platform)||navigator.platform||navigator.userAgent||"";
+    return /win/i.test(p)?"win":"unix";
+  }
+  var saved=localStorage.getItem("kit_os");
+  setOS(saved||detectOS());
+  function setOS(os){
+    document.body.className="os-"+os;
+    localStorage.setItem("kit_os",os);
+    document.querySelectorAll("#osswitch button").forEach(function(b){
+      b.classList.toggle("active",b.dataset.os===os);
+    });
+  }
+  document.querySelectorAll("#osswitch button").forEach(function(b){
+    b.addEventListener("click",function(){setOS(b.dataset.os)});
+  });
+
+  // ---- Copy buttons ----
+  document.querySelectorAll(".cmd .copy").forEach(function(btn){
+    btn.addEventListener("click",function(){
+      var code=btn.parentElement.querySelector("code").innerText;
+      var done=function(){btn.textContent="Copié ✓";btn.classList.add("ok");
+        setTimeout(function(){btn.textContent="Copier";btn.classList.remove("ok")},1400)};
+      if(navigator.clipboard&&navigator.clipboard.writeText){
+        navigator.clipboard.writeText(code).then(done).catch(fallback);
+      } else { fallback(); }
+      function fallback(){
+        var t=document.createElement("textarea");t.value=code;document.body.appendChild(t);
+        t.select();try{document.execCommand("copy")}catch(e){}t.remove();done();
+      }
+    });
+  });
+
+  // ---- Progress / checklist ----
+  var boxes=Array.prototype.slice.call(document.querySelectorAll(".step input[type=checkbox]"));
+  var state=JSON.parse(localStorage.getItem("kit_progress")||"{}");
+  function refreshCard(card){
+    var ins=card.querySelectorAll(".step input");
+    if(!ins.length)return;
+    var all=Array.prototype.every.call(ins,function(i){return i.checked});
+    card.classList.toggle("done",all);
+  }
+  function update(){
+    var total=boxes.length, done=0;
+    boxes.forEach(function(b){if(b.checked)done++;
+      b.closest(".step").classList.toggle("checked",b.checked);});
+    var pct=total?Math.round(done/total*100):0;
+    document.getElementById("progfill").style.width=pct+"%";
+    document.getElementById("progtext").textContent=done+" / "+total+" étapes";
+    document.getElementById("progpct").textContent=pct+"%";
+    document.querySelectorAll(".card").forEach(refreshCard);
+  }
+  boxes.forEach(function(b){
+    b.checked=!!state[b.dataset.id];
+    b.addEventListener("change",function(){
+      state[b.dataset.id]=b.checked;
+      localStorage.setItem("kit_progress",JSON.stringify(state));
+      update();
+    });
+  });
+  update();
+
+  document.getElementById("reset").addEventListener("click",function(){
+    if(!confirm("Réinitialiser toute la progression ?"))return;
+    state={};localStorage.removeItem("kit_progress");
+    boxes.forEach(function(b){b.checked=false});update();
+  });
+})();
+</script>
+</body>
+</html>

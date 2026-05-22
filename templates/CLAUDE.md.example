@@ -1,0 +1,40 @@
+# <Nom du projet> — <une phrase qui décrit la plateforme>
+
+> Remplace tout ce qui est entre <…> puis supprime cette ligne.
+> Ce fichier est lu par Claude Code à CHAQUE session. Garde-le court et à jour.
+
+## Stack
+- **Next.js 15 + React 19 + TypeScript** (App Router, `src/`)
+- **Tailwind 4** — mobile-first (valider 375px avant 1280px)
+- **Supabase** (Postgres) — DB + Auth (Google/GitHub) + RLS strict day 1
+- **Stripe** — paiements / abonnements
+- **Resend** — emails transactionnels
+- **Vercel** — hébergement, deploy auto à chaque push
+
+## Conventions
+- Code / commits / noms de fichiers : **anglais**
+- Textes visibles par l'utilisateur (UI) : **<langue de tes users>**
+- Commits granulaires : un fix = un commit
+- Branche dédiée par feature (`feature/<topic>`), jamais de commit direct sur `main`
+
+## Architecture (à compléter au fur et à mesure)
+- `src/app/` — routes (App Router)
+- `src/lib/` — clients (supabase, stripe), helpers
+- `supabase/migrations/` — schéma versionné (RLS incluse)
+
+## Règles métier importantes
+- <ex : un utilisateur ne voit que ses propres données (RLS)>
+- <ex : pas de commission sur les paiements>
+
+## Ne PAS faire
+- Ne pas commit de secrets (tout dans `.env.local`, gitignored)
+- Ne pas créer de tables sans Row-Level Security
+- Ne pas modifier le schéma directement dans le dashboard — toujours via migration
+
+## Comment lancer / tester
+```bash
+npm run dev          # dev local (localhost:3000)
+npm run build        # build prod
+npm test             # tests unitaires
+npm run test:e2e     # tests end-to-end Playwright
+```
