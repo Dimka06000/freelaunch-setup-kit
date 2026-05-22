@@ -7,11 +7,9 @@
 <style>
   :root{
     --bg:#FFF6EC; --surface:#fff; --ink:#1c1917; --muted:#78716c;
-    --accent:#FF6B3D; --accent-dark:#E8552B; --success:#16a34a;
-    --calm-bg:#ecfeff;
+    --accent:#FF6B3D; --accent-dark:#E8552B; --success:#16a34a; --calm-bg:#ecfeff;
     --border:#1c191714; --code:#211c1a; --code-ink:#f5efe7;
-    --radius:18px; --shadow:0 14px 38px -16px #1c191733;
-    --maxw:780px;
+    --radius:18px; --shadow:0 14px 38px -16px #1c191733; --maxw:780px;
   }
   *{box-sizing:border-box}
   html{scroll-behavior:smooth}
@@ -48,24 +46,22 @@
   .card h2 .t{flex:1}
   .timechip{flex:none;font-size:12px;font-weight:700;color:var(--muted);background:#0000000a;padding:5px 11px;border-radius:999px}
   .done-badge{font-size:12px;font-weight:700;color:var(--success);opacity:0;transition:.2s;margin-left:8px}
-  .card.done .done-badge{opacity:1}
-  .card.done{border-color:#16a34a40}
+  .card.done .done-badge{opacity:1}.card.done{border-color:#16a34a40}
   .card > p{color:#57534e;margin-top:0}
-
-  .howto{background:#fffaf4;border:1px dashed #ff6b3d44;border-radius:14px;padding:13px 16px;margin:12px 0}
-  .howto p{margin:.18em 0}
+  ol.steps{margin:8px 0;padding-left:22px}
+  ol.steps li{margin:7px 0}
+  .pill{display:inline-block;background:#fff;border:1px solid var(--border);border-radius:8px;padding:1px 9px;font-weight:700;font-size:13.5px}
   .kbd{display:inline-block;background:#fff;border:1px solid #00000022;border-bottom-width:2px;border-radius:7px;padding:1px 8px;font-weight:700;font-size:13px;font-family:ui-monospace,Menlo,Consolas,monospace}
 
+  .btnrow{margin:12px 0}
+  .dlbtn{display:inline-block;background:var(--ink);color:#fff;padding:12px 18px;border-radius:12px;font-weight:800;text-decoration:none;box-shadow:var(--shadow)}
+  .dlbtn:hover{filter:brightness(1.12);text-decoration:none}
+
   .bigcmd{position:relative;margin:14px 0}
-  .bigcmd pre{margin:0;background:var(--code);color:var(--code-ink);border-radius:14px;padding:18px;overflow:auto;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13.5px;line-height:1.5}
+  .bigcmd pre{margin:0;border-radius:14px;padding:18px;overflow:auto;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13.5px;line-height:1.5;background:var(--code);color:var(--code-ink)}
   .bigcmd pre.prompt{white-space:pre-wrap;font-family:inherit;font-size:15px;line-height:1.55;background:#fffdf9;color:#1c1917;border:1px solid #ff6b3d2e}
   .bigcopy{display:block;width:100%;margin-top:10px;border:0;background:linear-gradient(135deg,var(--accent),var(--accent-dark));color:#fff;padding:15px;border-radius:13px;cursor:pointer;font-weight:800;font-size:16px;box-shadow:var(--shadow)}
   .bigcopy:hover{filter:brightness(1.05)}.bigcopy.ok{background:var(--success)}
-
-  .cmd{position:relative;margin:10px 0}
-  .cmd pre{margin:0;background:var(--code);color:var(--code-ink);border-radius:11px;padding:13px 84px 13px 15px;overflow:auto;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;line-height:1.5}
-  .cmd .copy{position:absolute;top:8px;right:8px;border:0;background:#ffffff1a;color:#fff;padding:6px 12px;border-radius:8px;cursor:pointer;font-weight:700;font-size:12px}
-  .cmd .copy:hover{background:#ffffff33}.cmd .copy.ok{background:var(--success)}
 
   .calm{background:var(--calm-bg);border:1px solid #06b6d433;border-radius:13px;padding:12px 15px;margin:12px 0;font-size:14.5px;color:#155e75}
   .calm b{color:#0e7490}
@@ -80,6 +76,10 @@
   summary::-webkit-details-marker{display:none}
   summary::before{content:"▸ ";color:var(--accent)}
   details[open] summary::before{content:"▾ "}
+  .cmd{position:relative;margin:10px 0}
+  .cmd pre{margin:0;background:var(--code);color:var(--code-ink);border-radius:11px;padding:13px 84px 13px 15px;overflow:auto;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;line-height:1.5}
+  .cmd .copy{position:absolute;top:8px;right:8px;border:0;background:#ffffff1a;color:#fff;padding:6px 12px;border-radius:8px;cursor:pointer;font-weight:700;font-size:12px}
+  .cmd .copy:hover{background:#ffffff33}.cmd .copy.ok{background:var(--success)}
 
   a{color:var(--accent-dark);font-weight:600;text-decoration:none}a:hover{text-decoration:underline}
   code.inl{background:#0000000d;padding:2px 7px;border-radius:6px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.9em}
@@ -109,44 +109,52 @@
 <main>
   <section class="hero">
     <h1>Tu installes un assistant.<br>Il s'occupe de tout. 🪄</h1>
-    <p><b>Pas besoin d'être développeur.</b> Tu n'as que <b>2 petites choses</b> à faire dans une
-       fenêtre « terminal ». Après, tu parles à l'assistant <b>en français</b> et c'est lui qui
-       installe les outils, t'aide pour tes comptes, et construit ta plateforme.</p>
-    <div class="big-idea">💡 L'idée : <b>tu n'installes que Claude</b> (l'assistant). Ensuite tu lui dis
-      « installe tout et aide-moi », et <b>il fait le reste à ta place</b>.</div>
+    <p><b>Pas besoin d'être développeur, ni de toucher au terminal.</b> Tu installes VS Code et
+       l'assistant Claude, tu lui colles un message, et <b>c'est lui qui fait le reste</b> :
+       il installe les outils, t'aide pour tes comptes, et construit ta plateforme.</p>
+    <div class="big-idea">💡 L'idée : tu prépares juste <b>VS Code + Claude</b>. Ensuite tu discutes
+      <b>en français</b>, et Claude travaille à ta place.</div>
   </section>
 
-  <!-- 1 : installer Claude -->
+  <!-- 1 : VS Code -->
   <article class="card" id="c1">
-    <h2><span class="num">1</span><span class="t">Installe l'assistant Claude</span><span class="timechip">2 min</span><span class="done-badge">✓</span></h2>
-    <p>D'abord, ouvre le « terminal » (une fenêtre où on colle du texte). Voici comment :</p>
-    <div class="howto win">
-      <p>• Appuie sur <span class="kbd">⊞ Windows</span> → tape <b>Terminal</b> → <span class="kbd">Entrée</span></p>
-    </div>
-    <div class="howto unix">
-      <p>• Appuie sur <span class="kbd">⌘ Cmd</span> + <span class="kbd">Espace</span> → tape <b>Terminal</b> → <span class="kbd">Entrée</span></p>
-    </div>
-    <p>Ensuite, copie cette commande, colle-la dans le terminal
-      (<span class="kbd win">Ctrl+V</span><span class="kbd unix">⌘ Cmd+V</span>) et appuie sur <span class="kbd">Entrée</span> :</p>
-    <div class="bigcmd win">
-      <pre><code>irm https://claude.ai/install.ps1 | iex</code></pre>
-      <button class="bigcopy">📋 Copier la commande</button>
-    </div>
-    <div class="bigcmd unix">
-      <pre><code>curl -fsSL https://claude.ai/install.sh | bash</code></pre>
-      <button class="bigcopy">📋 Copier la commande</button>
-    </div>
-    <div class="calm">😌 <b>Aucun risque.</b> Ça installe juste l'assistant. Du texte va défiler, c'est normal.</div>
-    <div class="step"><input type="checkbox" data-id="t1"><div class="body">Claude est installé</div></div>
+    <h2><span class="num">1</span><span class="t">Installe VS Code</span><span class="timechip">2 min</span><span class="done-badge">✓</span></h2>
+    <p>VS Code, c'est le logiciel dans lequel vit l'assistant. Télécharge-le et installe-le (clique « Suivant » partout) :</p>
+    <div class="btnrow"><a class="dlbtn" href="https://code.visualstudio.com/download" target="_blank">⬇️ Télécharger VS Code</a></div>
+    <div class="step"><input type="checkbox" data-id="v1"><div class="body">VS Code est installé et ouvert</div></div>
   </article>
 
-  <!-- 2 : lancer Claude + coller le message -->
+  <!-- 2 : extension Claude -->
   <article class="card" id="c2">
-    <h2><span class="num">2</span><span class="t">Lance-le et laisse-le tout faire</span><span class="timechip">le reste !</span><span class="done-badge">✓</span></h2>
-    <p>Toujours dans le terminal, tape <code class="inl">claude</code> puis <span class="kbd">Entrée</span> :</p>
-    <div class="bigcmd"><pre><code>claude</code></pre><button class="bigcopy">📋 Copier</button></div>
-    <p>La première fois, il ouvre une page pour te connecter (clique <b>« Autoriser »</b>). Ensuite,
-       <b>colle-lui ce message</b> et appuie sur Entrée :</p>
+    <h2><span class="num">2</span><span class="t">Ajoute l'assistant Claude</span><span class="timechip">1 min</span><span class="done-badge">✓</span></h2>
+    <p>Dans VS Code, on ajoute l'extension « Claude Code ». Tout est inclus dedans — <b>rien d'autre à installer</b>.</p>
+    <ol class="steps">
+      <li>Ouvre les extensions : <span class="kbd win">Ctrl+Shift+X</span><span class="kbd unix">⌘ Cmd+Shift+X</span></li>
+      <li>Dans la barre de recherche, tape <span class="pill">Claude Code</span></li>
+      <li>Sur le résultat d'Anthropic, clique <span class="pill">Install</span></li>
+    </ol>
+    <div class="calm">😌 <b>C'est tout pour l'install.</b> L'extension contient l'assistant — pas besoin de terminal ni d'autre téléchargement.</div>
+    <div class="step"><input type="checkbox" data-id="v2"><div class="body">L'extension « Claude Code » est installée</div></div>
+  </article>
+
+  <!-- 3 : ouvrir un dossier + lancer + connexion -->
+  <article class="card" id="c3">
+    <h2><span class="num">3</span><span class="t">Ouvre un dossier &amp; connecte-toi</span><span class="timechip">2 min</span><span class="done-badge">✓</span></h2>
+    <p>Claude a besoin d'un <b>dossier</b> pour y ranger ton projet, et d'une connexion à ton compte.</p>
+    <ol class="steps">
+      <li>Crée un dossier vide sur ton bureau (ex. <span class="pill">mon-projet</span>)</li>
+      <li>Dans VS Code : menu <b>Fichier → Ouvrir le dossier…</b> → choisis ce dossier</li>
+      <li>Clique l'icône <b>✨ Claude</b> (en haut à droite de la fenêtre) pour ouvrir le panneau</li>
+      <li>Clique <b>Se connecter</b> → une page web s'ouvre → clique <b>« Autoriser »</b></li>
+    </ol>
+    <div class="calm">🔐 La connexion utilise ton compte Claude (le même que sur claude.ai). C'est sûr.</div>
+    <div class="step"><input type="checkbox" data-id="v3"><div class="body">Le panneau Claude est ouvert et je suis connecté</div></div>
+  </article>
+
+  <!-- 4 : message magique -->
+  <article class="card" id="c4">
+    <h2><span class="num">4</span><span class="t">Colle ce message &amp; laisse-le faire</span><span class="timechip">le reste !</span><span class="done-badge">✓</span></h2>
+    <p>Dans le panneau Claude, <b>colle ce message</b> et appuie sur <span class="kbd">Entrée</span> :</p>
     <div class="bigcmd">
       <pre class="prompt"><code>Salut Claude ! Je veux créer une plateforme (un site web avec comptes, paiements et emails), mais je ne suis pas développeur.
 
@@ -161,23 +169,27 @@ Parle-moi en français, simplement. Quand tu as besoin d'une autorisation, deman
       <button class="bigcopy">📋 Copier ce message pour Claude</button>
     </div>
     <div class="calm">✨ <b>À partir de là, tu n'as plus qu'à discuter.</b> Claude installe les outils, t'ouvre les bonnes pages pour tes comptes, range tes clés en sécurité, et construit ta plateforme. Tu réponds simplement à ses questions.</div>
-    <div class="step"><input type="checkbox" data-id="t2"><div class="body">J'ai lancé Claude et collé le message — il s'occupe du reste 🎉</div></div>
+    <div class="step"><input type="checkbox" data-id="v4"><div class="body">J'ai collé le message — Claude s'occupe du reste 🎉</div></div>
   </article>
 
-  <!-- 3 : ce que Claude te demandera -->
-  <article class="card" id="c3">
-    <h2><span class="num">3</span><span class="t">Ce que Claude te demandera</span><span class="timechip">au fil de l'eau</span><span class="done-badge">✓</span></h2>
+  <!-- 5 : ce que Claude te demandera -->
+  <article class="card" id="c5">
+    <h2><span class="num">5</span><span class="t">Ce que Claude te demandera</span><span class="timechip">au fil de l'eau</span><span class="done-badge">✓</span></h2>
     <p>Il ne reste que les choses que <b>lui ne peut pas faire à ta place</b> — il te les demandera gentiment :</p>
     <div class="calm">👉 <b>« Autorise »</b> : parfois une page web s'ouvre pour relier un service. Clique « Autoriser ».</div>
     <div class="calm">👉 <b>« Colle cette clé »</b> : tu crées un compte gratuit (Supabase, Stripe…) et tu copies un petit code. Claude te dit exactement lequel.</div>
-    <div class="calm">👉 <b>« Je peux faire ça ? »</b> : quand Claude veut lancer quelque chose, il demande la permission. Tu réponds oui (tape <span class="kbd">y</span> ou <span class="kbd">Entrée</span>).</div>
-    <div class="step"><input type="checkbox" data-id="t3"><div class="body">J'ai compris : je réponds simplement à Claude quand il me sollicite</div></div>
+    <div class="calm">👉 <b>« Je peux faire ça ? »</b> : quand Claude veut lancer quelque chose, il demande la permission. Clique <b>« Autoriser »</b> / <b>« Yes »</b>.</div>
+    <div class="step"><input type="checkbox" data-id="v5"><div class="body">J'ai compris : je réponds simplement à Claude quand il me sollicite</div></div>
     <details>
-      <summary>Les services et clés (si tu veux préparer à l'avance)</summary>
+      <summary>Astuce : éviter d'avoir à valider à chaque fois</summary>
+      <p style="font-size:14px">Dans le panneau, clique l'<b>indicateur de mode</b> en bas et choisis <b>« Edit automatically »</b> (acceptEdits) : Claude édite les fichiers sans te redemander, mais te demande quand même pour les actions importantes. Le mode « Bypass permissions » (tout sans rien demander) existe mais se réserve aux utilisateurs avertis — détail : <a href="04-claude-code.md">04-claude-code.md</a>.</p>
+    </details>
+    <details>
+      <summary>Les comptes &amp; clés (si tu veux préparer à l'avance)</summary>
       <p style="font-size:14px">Comptes gratuits : <a href="https://supabase.com" target="_blank">Supabase</a> (base de données),
         <a href="https://dashboard.stripe.com" target="_blank">Stripe</a> (paiements),
         <a href="https://resend.com" target="_blank">Resend</a> (emails),
-        <a href="https://console.anthropic.com" target="_blank">Anthropic</a> (l'assistant).
+        <a href="https://console.anthropic.com" target="_blank">Anthropic</a>.
         Détail clé par clé : <a href="03-api-keys.md">03-api-keys.md</a>.</p>
     </details>
   </article>
@@ -186,7 +198,7 @@ Parle-moi en français, simplement. Quand tu as besoin d'une autorisation, deman
 
 <div class="footer">
   <button class="reset" id="reset">↺ Réinitialiser ma progression</button><br>
-  Tu préfères tout faire toi-même, ou tu es développeur ? Les chapitres détaillés :
+  Tu préfères le terminal, ou tu es développeur ? Les chapitres détaillés :
   <br>
   <a href="00-prerequis.md">Prérequis</a><a href="01-cli-tools.md">Outils</a><a href="02-github.md">GitHub</a><a href="03-api-keys.md">Clés API</a><a href="04-claude-code.md">Claude Code</a><a href="05-mcp.md">MCP</a><a href="06-creer-la-plateforme.md">Plateforme</a><a href="07-claude-architecture.md">Fichiers Claude</a>
 </div>
@@ -215,7 +227,7 @@ Parle-moi en français, simplement. Quand tu as besoin d'une autorisation, deman
   document.querySelectorAll(".cmd .copy").forEach(function(b){wireCopy(b,"Copié ✓","Copier")});
 
   var boxes=[].slice.call(document.querySelectorAll(".step input[type=checkbox]"));
-  var state=JSON.parse(localStorage.getItem("kit_progress3")||"{}");
+  var state=JSON.parse(localStorage.getItem("kit_progress4")||"{}");
   var progfill=document.getElementById("progfill"),progtext=document.getElementById("progtext"),progpct=document.getElementById("progpct");
   function update(){
     var total=boxes.length,done=0;
@@ -226,10 +238,10 @@ Parle-moi en français, simplement. Quand tu as besoin d'une autorisation, deman
       if(ins.length)c.classList.toggle("done",[].every.call(ins,function(i){return i.checked}));});
   }
   boxes.forEach(function(b){b.checked=!!state[b.dataset.id];
-    b.addEventListener("change",function(){state[b.dataset.id]=b.checked;localStorage.setItem("kit_progress3",JSON.stringify(state));update();});});
+    b.addEventListener("change",function(){state[b.dataset.id]=b.checked;localStorage.setItem("kit_progress4",JSON.stringify(state));update();});});
   update();
   document.getElementById("reset").addEventListener("click",function(){
-    if(!confirm("Réinitialiser toute la progression ?"))return;state={};localStorage.removeItem("kit_progress3");
+    if(!confirm("Réinitialiser toute la progression ?"))return;state={};localStorage.removeItem("kit_progress4");
     boxes.forEach(function(b){b.checked=false});update();});
 })();
 </script>

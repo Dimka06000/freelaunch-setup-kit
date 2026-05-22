@@ -93,22 +93,20 @@ setup-kit/
 
 ## ▶️ Démarrage — pour un débutant (le plus simple)
 
-**Le principe : tu n'installes que Claude. Ensuite, c'est lui qui installe le reste et te guide.**
+**Le principe : tu prépares juste VS Code + Claude. Ensuite c'est lui qui installe le reste et te guide.**
+Aucun terminal au début — l'extension VS Code embarque déjà l'assistant.
 
-1. **Installe l'assistant Claude** (dans le terminal) :
-   ```powershell
-   irm https://claude.ai/install.ps1 | iex          # Windows
-   ```
-   ```bash
-   curl -fsSL https://claude.ai/install.sh | bash    # macOS / Linux
-   ```
-2. **Lance-le** (`claude`), connecte-toi, puis **colle-lui ce message** :
+1. **Installe VS Code** → [code.visualstudio.com/download](https://code.visualstudio.com/download)
+2. **Ajoute l'extension** : dans VS Code, panneau Extensions (`Ctrl+Shift+X` / `⌘+Shift+X`) → cherche
+   **« Claude Code »** → **Install**. (Rien d'autre à installer, l'assistant est inclus.)
+3. **Ouvre un dossier** (Fichier → Ouvrir le dossier), clique l'icône **✨ Claude**, **connecte-toi** (Autoriser).
+4. **Colle ce message** dans le panneau Claude :
    > Lis `https://github.com/Dimka06000/freelaunch-setup-kit`, installe tous les outils dont j'ai
    > besoin, guide-moi pour mes comptes et mes clés, et aide-moi à créer ma plateforme. Je ne suis
    > pas développeur, parle-moi en français.
-3. **Tu réponds juste à ses questions** (autoriser une page, coller une clé, dire oui). Il fait le reste.
+5. **Tu réponds juste à ses questions** (autoriser une page, coller une clé, dire oui). Il fait le reste.
 
-La page guide [index.html](./index.html) présente ces 2 étapes joliment, avec boutons « Copier ».
+La page guide [index.html](./index.html) présente ces étapes joliment, avec boutons « Copier ».
 
 ### Voir la page guide
 **Windows** : double-clique `start.cmd` · **Mac/Linux** : `bash ./start.sh` (ou `node serve.js`)
