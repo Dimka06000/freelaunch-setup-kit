@@ -101,22 +101,28 @@ progression sauvegardée) servie par un petit **dev serveur local** (Node, zéro
 
 → Ton navigateur s'ouvre tout seul sur `http://localhost:4321` avec le guide.
 
-### En UNE commande
+### ⭐ Le one-liner « tout-en-un » (recommandé)
 
-**Tu as déjà le `setup-kit.zip`** (dézippe + lance d'un coup) :
+Une seule commande qui **télécharge le kit → installe TOUS les CLI automatiquement** (Node, git,
+gh, vercel, supabase, stripe, Claude Code, sans admin) **→ ouvre le guide** pour les seules étapes
+qui demandent tes comptes (connexions navigateur + clés API) :
+
+```powershell
+irm https://raw.githubusercontent.com/Dimka06000/freelaunch-setup-kit/main/bootstrap.ps1 | iex     # Windows
+```
+```bash
+curl -fsSL https://raw.githubusercontent.com/Dimka06000/freelaunch-setup-kit/main/bootstrap.sh | bash   # macOS / Linux
+```
+
+> Ce qui reste forcément manuel (Claude ne peut pas créer tes comptes) : valider les logins dans le
+> navigateur et récupérer les clés API. Le guide t'y emmène pas à pas.
+
+### Alternative : tu as déjà le `setup-kit.zip`
 ```powershell
 Expand-Archive "$HOME\Downloads\setup-kit.zip" "$HOME" -Force; node "$HOME\setup-kit\serve.js"   # Windows
 ```
 ```bash
 unzip -o ~/Downloads/setup-kit.zip -d ~ && node ~/setup-kit/serve.js                              # macOS / Linux
-```
-
-**Kit publié sur un repo GitHub public** (rien à télécharger à la main, voir `bootstrap.*`) :
-```powershell
-irm https://raw.githubusercontent.com/<USER>/<REPO>/main/bootstrap.ps1 | iex                      # Windows
-```
-```bash
-curl -fsSL https://raw.githubusercontent.com/<USER>/<REPO>/main/bootstrap.sh | bash               # macOS / Linux
 ```
 Détecte ton OS et affiche les bonnes commandes. Coche au fur et à mesure.
 

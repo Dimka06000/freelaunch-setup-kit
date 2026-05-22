@@ -1,52 +1,41 @@
 #!/usr/bin/env bash
-# Setup Kit — Installation des CLI (macOS / Linux)
-# Usage : bash ./scripts/install-mac.sh
-# Idempotent : ne reinstalle pas ce qui est deja present.
+# Setup Kit — Installation AUTOMATIQUE de tous les CLI (macOS / Linux)
+# Tout via Homebrew : node, git, gh, supabase, stripe, vercel, Claude Code.
+# Idempotent. Rafraichit l'environnement brew en live.
 
 set -e
-have() { command -v "$1" >/dev/null 2>&1; }
-step() { printf "\n=== %s ===\n" "$1"; }
+have(){ command -v "$1" >/dev/null 2>&1; }
+step(){ printf "\n=== %s ===\n" "$1"; }
+brew_env(){ for b in /opt/homebrew/bin/brew /usr/local/bin/brew "$HOME/.linuxbrew/bin/brew" /home/linuxbrew/.linuxbrew/bin/brew; do [ -x "$b" ] && eval "$("$b" shellenv)"; done; }
 
-# --- Homebrew ---
 step "Homebrew"
-if have brew; then
-  echo "brew OK"
-else
-  echo "Installation de Homebrew..."
+if have brew; then echo "brew OK"; else
   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-  echo ">> Ajoute brew au PATH si demande, puis relance ce script."
 fi
+brew_env
 
-# --- Node ---
-step "Node.js"
-if have node; then echo "Node: $(node -v)"; else brew install node; fi
+step "Node.js + git + GitHub CLI"
+have node || brew install node
+have git  || brew install git
+have gh   || brew install gh
 
-# --- Git ---
-step "Git"
-if have git; then echo "git: $(git --version)"; else brew install git; fi
-
-# --- GitHub CLI ---
-step "GitHub CLI (gh)"
-if have gh; then echo "gh OK"; else brew install gh; fi
-
-# --- Supabase CLI ---
 step "Supabase CLI"
-if have supabase; then echo "supabase: $(supabase --version)"; else brew install supabase/tap/supabase; fi
+have supabase || brew install supabase/tap/supabase
 
-# --- Stripe CLI ---
 step "Stripe CLI"
-if have stripe; then echo "stripe: $(stripe --version)"; else brew install stripe/stripe-cli/stripe; fi
+have stripe || brew install stripe/stripe-cli/stripe
 
-# --- Vercel CLI ---
 step "Vercel CLI"
-if have vercel; then echo "vercel: $(vercel --version)"; else npm install -g vercel; fi
+have vercel || npm install -g vercel
 
-# --- Claude Code ---
 step "Claude Code"
-if have claude; then echo "claude OK"; else curl -fsSL https://claude.ai/install.sh | bash; fi
+have claude || { curl -fsSL https://claude.ai/install.sh | bash; }
 
-printf "\nTermine. Lance: bash ./scripts/verify.sh\n"
-echo "Prochaines etapes :"
-echo "  1) gh auth login          (chapitre 02-github)"
-echo "  2) vercel login / supabase login / stripe login"
-echo "  3) claude                 (chapitre 04-claude-code)"
+step "Verification"
+for t in node git gh vercel supabase stripe claude; do
+  if have "$t"; then echo "[OK]   $t"; else echo "[A REVOIR] $t (rouvre le terminal puis relance si besoin)"; fi
+done
+echo ""
+echo "Outils installes. Il reste les etapes qui demandent TES comptes :"
+echo "  - connexions : gh auth login / vercel login / supabase login / stripe login / claude"
+echo "  - cles API : voir le guide (chapitre 03)."
