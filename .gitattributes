@@ -1,0 +1,11 @@
+# Normalise les fins de ligne pour que les scripts marchent partout.
+* text=auto
+
+# Scripts shell : TOUJOURS en LF (sinon "bad interpreter" sur macOS/Linux)
+*.sh    text eol=lf
+*.command text eol=lf
+
+# Scripts Windows : CRLF
+*.ps1   text eol=crlf
+*.cmd   text eol=crlf
+*.bat   text eol=crlf
